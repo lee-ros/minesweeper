@@ -1,9 +1,11 @@
 import msvcrt
 import atexit
+import time
 
 from . import console
-from .game_board import GameAction, GameBoard, GameConfig, GameState
 from .cell import CellType, CellState
+from .game_board import GameAction, GameBoard, GameConfig, GameState
+from .stopwatch import Stopwatch
 
 
 CELL_TYPE_TO_VISUALS = {
@@ -69,19 +71,24 @@ default_configs = [
 
 class GameConsoleUI:
     def __init__(self):
+        self._board = None
         self._config = default_configs[0]
-        self._board = GameBoard(self._config)
         self._selected_row = 0
         self._selected_col = 0
+        self._stopwatch = Stopwatch()
 
-        atexit.register(console.set_cursor_visibility, console.ANSICursor.Visible)
-        console.set_cursor_visibility(console.ANSICursor.Invisible)
-        console.clear()
+        
 
     def run(self):
+        self._create_board()
+        console.set_cursor_visibility(console.ANSICursor.Invisible)
+        console.clear()
+        
         while True:
             self._print_board()
             self._handle_input()
+            
+            time.sleep(0.005)
 
     def _print_board(self):
         console.move_cursor_home()
@@ -94,9 +101,11 @@ class GameConsoleUI:
                 self._print_game_board()
 
             case GameState.Won:
+                self._stopwatch.stop()
                 console.write(won_message)
 
             case GameState.Lost:
+                self._stopwatch.stop()
                 console.write(lost_message)
 
         self._print_status_bar()
@@ -118,9 +127,12 @@ class GameConsoleUI:
 
     def _print_status_bar(self):
         console.write(
-            f"State: {self._board.state.value}, "
-            f"Action: {self._board.action.value}, "
-            f"Mines: {self._board.remaining_mines}\n"
+            ", ".join([
+                f"State: {self._board.state.value}",
+                f"Action: {self._board.action.value}",
+                f"Mines: {self._board.remaining_mines}",
+                f"Time: {self._stopwatch.time_format}\n"
+            ])
         )
 
     def _generate_cell_visual(self, row: int, col: int):
@@ -144,6 +156,9 @@ class GameConsoleUI:
         )
 
     def _handle_input(self):
+        if not msvcrt.kbhit():
+            return 
+        
         input = msvcrt.getch()
         self._handle_basic_input(input)
         if self._board.state == GameState.Running:
@@ -153,10 +168,13 @@ class GameConsoleUI:
         match input:
             case b"n":
                 self._create_board()
-            case b"\x1b" | b"\x03":  # Esc | Ctrl+C
+            case b"\x1b":  # Esc
+                console.set_cursor_visibility(console.ANSICursor.Visible)
+                self._stopwatch.stop()
                 exit()
 
     def _create_board(self):
+        self._stopwatch.run()
         self._board = GameBoard(self._config)
 
     def _handle_game_input(self, input: bytes):
@@ -171,8 +189,12 @@ class GameConsoleUI:
                 self._move_selection_by(col=+1),
             case b"c":
                 self._board.switch_action()
+            case b'1' | b'2' | b'3':
+                self._config = default_configs[int(input) - 1]
+                self._create_board()
             case b"\x20":  # space
                 self._board.handle_action(self._selected_row, self._selected_col),
+            
 
     def _move_selection_by(self, *, row=0, col=0):
         self._selected_row = (self._selected_row + row) % self._board.config.height

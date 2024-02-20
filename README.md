@@ -5,7 +5,7 @@ A console implementation of the classic minesweeper game
 - (space) to press the selected key.
 - (c) to change the press action.
 - (n) to start a new game.
-- press Esc or Ctrl+C to exit the game.
+- press Esc to exit the game.
 
 ## Instructions:
 To win the game one must find all the mines that are spread around the board.
