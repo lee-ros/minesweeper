@@ -35,3 +35,7 @@ class Cell:
     @property
     def col(self) -> int:
         return self._col
+    
+    @property
+    def is_initialized(self):
+        return self._type != CellType.Uninitialized
