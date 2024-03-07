@@ -1,5 +1,8 @@
-from minesweeper.game_console_ui import GameConsoleUI
+from minesweeper.controller_runner import ControllerRunner
+from minesweeper.game_mvc import GameController
+
 
 if __name__ == "__main__":
-    game_ui = GameConsoleUI()
-    game_ui.run()
+    game_controller = GameController()
+    controller_runner = ControllerRunner(game_controller)
+    controller_runner.run()
