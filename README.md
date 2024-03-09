@@ -1,14 +1,19 @@
 A console implementation of the classic minesweeper game
 
 ## How to use
-1. Clone or download the source code.
-2. Make sure python is installed
-3. Run the game and follow the on-screen instructions
+### Clone the repo
+```bash
+git clone https://github.com/lee-ros/minesweeper.git
+```
 
-
-## Run
-```python
-python main.py
+### Install the package
+```bash
+# inside repo directory
+pip install -e .
+```
+### Run
+```bash
+minesweeper
 ```
 
 ## Game Instructions:
