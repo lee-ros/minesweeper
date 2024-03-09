@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minesweeper"
+version = "1.0.0"
+description = "Read the latest Real Python tutorials"
+readme = "README.md"
+authors = [{ name = "Lee Rosenberg", email = "laluk321@gmail.com" }]
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = ["black", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/lee-ros/minesweeper"
+
+[project.scripts]
+minesweeper = "minesweeper.__main__:main"
